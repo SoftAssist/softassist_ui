@@ -1,0 +1,117 @@
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: var(--card-bg);
+  border-right: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.sidebar-header h2 {
+  color: var(--neon-yellow);
+  margin: 0;
+  font-size: 1.5rem;
+  text-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 0, 0.1);
+}
+
+.nav-item.active {
+  background-color: var(--black);
+  border-left: 3px solid var(--neon-yellow);
+  color: var(--neon-yellow);
+}
+
+.nav-icon {
+  margin-right: 12px;
+  font-size: 1.2rem;
+}
+
+.nav-label {
+  font-size: 1rem;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid var(--border-light);
+  margin-top: auto;
+}
+
+/* Update main content area to account for sidebar */
+.main-content {
+  margin-left: 250px;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.user-profile {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 10px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--neon-yellow);
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
+}
+
+.user-details {
+  flex: 1;
+  overflow: hidden;
+}
+
+.user-name {
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

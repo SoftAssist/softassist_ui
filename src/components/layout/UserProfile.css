@@ -1,0 +1,102 @@
+.user-profile {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 10px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info.loading {
+  opacity: 0.7;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--neon-yellow);
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
+}
+
+.user-avatar-skeleton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    var(--border-light) 0%,
+    var(--card-bg) 50%,
+    var(--border-light) 100%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.user-details {
+  flex: 1;
+  overflow: hidden;
+}
+
+.user-name {
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  color: var(--neon-yellow);
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+.user-details-skeleton {
+  flex: 1;
+}
+
+.name-skeleton,
+.email-skeleton {
+  height: 12px;
+  margin-bottom: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--border-light) 0%,
+    var(--card-bg) 50%,
+    var(--border-light) 100%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.name-skeleton {
+  width: 70%;
+}
+
+.email-skeleton {
+  width: 90%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+} 

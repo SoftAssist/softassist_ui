@@ -1,0 +1,32 @@
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--white);
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.logout-button:hover {
+  background-color: rgba(255, 255, 0, 0.1);
+  border-color: var(--neon-yellow);
+  color: var(--neon-yellow);
+}
+
+.logout-icon {
+  font-size: 1.2rem;
+}
+
+.logout-text {
+  font-size: 0.9rem;
+}
+
+.logout-button:hover .logout-icon {
+  transform: translateX(3px);
+  transition: transform 0.3s ease;
+}
