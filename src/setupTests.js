@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 require('@testing-library/jest-dom');
 
 // Add TextEncoder/TextDecoder to global if they don't exist
