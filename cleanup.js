@@ -1,5 +1,5 @@
-const { exec } = require('child_process');
-const os = require('os');
+import { exec } from 'child_process';
+import os from 'os';
 
 const port = 3000; // Match this with your webpack config port
 

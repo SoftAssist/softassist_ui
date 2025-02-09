@@ -1,3 +1,4 @@
+import React from 'react';
 import { ClerkProvider, SignIn, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import PropTypes from 'prop-types';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
