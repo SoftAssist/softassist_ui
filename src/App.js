@@ -9,7 +9,11 @@ import Projects from './components/projects/Projects.js';
 import Settings from './components/settings/Settings.js';
 import './App.css';
 
-const CLERK_PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
+  throw new Error("Missing Publishable Key")
+}
+
+const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 
 // Add environment indicator for debugging
 const currentEnv = process.env.NODE_ENV || 'development';
@@ -50,54 +54,49 @@ ProtectedRoute.propTypes = {
 };
 
 function App() {
-  if (!CLERK_PUBLISHABLE_KEY) {
-    console.error(`Missing Clerk Publishable Key in ${currentEnv} environment`);
-    return <div>Configuration Error: Missing Clerk Publishable Key</div>;
-  }
+  React.useEffect(() => {
+    // Add dark mode class to html element
+    document.documentElement.classList.add('dark');
+  }, []);
 
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+    <ClerkProvider publishableKey={clerkPubKey}>
       <BrowserRouter>
-        <div className="app-container">
-          <Routes>
-            <Route 
-              path="/sign-in" 
-              element={
+        <Routes>
+          <Route 
+            path="/sign-in" 
+            element={
+              <SignedOut>
+                <SignIn routing="path" signUpUrl="/sign-up" />
+              </SignedOut>
+            } 
+          />
+          
+          {/* Protected Routes */}
+          <Route
+            path="/*"
+            element={
+              <>
+                <SignedIn>
+                  <div className="flex min-h-screen">
+                    <Sidebar />
+                    <main className="flex-1 p-6">
+                      <Routes>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/projects" element={<Projects />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                      </Routes>
+                    </main>
+                  </div>
+                </SignedIn>
                 <SignedOut>
-                  <SignIn routing="path" signUpUrl="/sign-up" />
+                  <RedirectToSignIn />
                 </SignedOut>
-              } 
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/projects"
-              element={
-                <ProtectedRoute>
-                  <Projects />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/"
-              element={<Navigate to="/dashboard" replace />}
-            />
-          </Routes>
-        </div>
+              </>
+            }
+          />
+        </Routes>
       </BrowserRouter>
     </ClerkProvider>
   );
