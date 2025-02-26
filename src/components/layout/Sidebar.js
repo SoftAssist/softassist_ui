@@ -1,47 +1,48 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useUser } from '@clerk/clerk-react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar.jsx';
+import { Button } from '../ui/button.jsx';
+import Logout from '../auth/Logout.js';
 
-import UserProfile from './UserProfile';
-import Logout from '../auth/Logout';
-import './Sidebar.css';
-
-const Sidebar = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const menuItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/projects', label: 'Projects', icon: '📁' },
-    { path: '/settings', label: 'Settings', icon: '⚙️' },
-    // Add more menu items as needed
-  ];
-
+function Sidebar() {
+  const { user } = useUser();
+  
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
-        <h2>SoftAssist</h2>
+      <div className="user-profile">
+        <Avatar>
+          <AvatarImage src={user?.imageUrl} />
+          <AvatarFallback>
+            {user?.firstName?.charAt(0)}
+            {user?.lastName?.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="user-info">
+          <p className="user-name">{user?.fullName}</p>
+          <p className="user-email">{user?.primaryEmailAddress?.emailAddress}</p>
+        </div>
       </div>
       
-      <UserProfile />
-
-      <nav className="sidebar-nav">
-        {menuItems.map((item) => (
-          <button
-            key={item.path}
-            className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
-            onClick={() => navigate(item.path)}
-          >
-            <span className="nav-icon">{item.icon}</span>
-            <span className="nav-label">{item.label}</span>
-          </button>
-        ))}
+      <nav>
+        <ul>
+          <li>
+            <Link to="/dashboard">Dashboard</Link>
+          </li>
+          <li>
+            <Link to="/projects">Projects</Link>
+          </li>
+          <li>
+            <Link to="/settings">Settings</Link>
+          </li>
+        </ul>
       </nav>
-
+      
       <div className="sidebar-footer">
         <Logout />
       </div>
     </div>
   );
-};
+}
 
 export default Sidebar; 

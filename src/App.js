@@ -3,12 +3,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import Sidebar from './components/layout/Sidebar';
-import Projects from './components/projects/Projects';
-import Settings from './components/settings/Settings';
+import Sidebar from './components/layout/Sidebar.js';
+import Dashboard from './components/Dashboard.jsx';
+import Projects from './components/projects/Projects.js';
+import Settings from './components/settings/Settings.js';
 import './App.css';
 
 const CLERK_PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+
+// Add environment indicator for debugging
+const currentEnv = process.env.NODE_ENV || 'development';
+console.log(`Running in ${currentEnv} environment`);
 
 // Layout wrapper component
 function Layout({ children }) {
@@ -44,18 +49,10 @@ ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-function Dashboard() {
-  return (
-    <div className="dashboard-container">
-      <h1>Welcome to Dashboard</h1>
-    </div>
-  );
-}
-
 function App() {
   if (!CLERK_PUBLISHABLE_KEY) {
-    console.error("Missing Clerk Publishable Key");
-    return <div>Missing Clerk Publishable Key</div>;
+    console.error(`Missing Clerk Publishable Key in ${currentEnv} environment`);
+    return <div>Configuration Error: Missing Clerk Publishable Key</div>;
   }
 
   return (

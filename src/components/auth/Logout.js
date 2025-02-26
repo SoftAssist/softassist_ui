@@ -1,30 +1,18 @@
-import { useClerk } from '@clerk/clerk-react';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Logout.css';
+import { useClerk } from '@clerk/clerk-react';
+import { Button } from '../ui/button.jsx';
 
-const Logout = () => {
+function Logout() {
   const { signOut } = useClerk();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      navigate('/sign-in');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
 
   return (
-    <button 
-      className="logout-button" 
-      onClick={handleLogout}
+    <Button 
+      variant="ghost" 
+      onClick={() => signOut()}
     >
-      <span className="logout-icon">⇥</span>
-      <span className="logout-text">Logout</span>
-    </button>
+      Sign Out
+    </Button>
   );
-};
+}
 
 export default Logout;
