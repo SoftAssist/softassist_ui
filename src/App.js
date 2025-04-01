@@ -7,6 +7,7 @@ import Sidebar from './components/layout/Sidebar.js';
 import Dashboard from './components/Dashboard.jsx';
 import Projects from './components/projects/Projects.js';
 import Settings from './components/settings/Settings.js';
+import Repositories from "./components/repositories/repositories.js";
 import './App.css';
 
 if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
@@ -86,6 +87,7 @@ function App() {
                         <Route path="/projects" element={<Projects />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        <Route path="/repositories" element={<Repositories />} />
                       </Routes>
                     </main>
                   </div>
