@@ -3,12 +3,22 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import Sidebar from './components/layout/Sidebar';
-import Projects from './components/projects/Projects';
-import Settings from './components/settings/Settings';
+import Sidebar from './components/layout/Sidebar.js';
+import Dashboard from './components/Dashboard.jsx';
+import Projects from './components/projects/Projects.js';
+import Settings from './components/settings/Settings.js';
+import Repositories from "./components/repositories/repositories.js";
 import './App.css';
 
-const CLERK_PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
+  throw new Error("Missing Publishable Key")
+}
+
+const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+
+// Add environment indicator for debugging
+const currentEnv = process.env.NODE_ENV || 'development';
+console.log(`Running in ${currentEnv} environment`);
 
 // Layout wrapper component
 function Layout({ children }) {
@@ -44,63 +54,51 @@ ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-function Dashboard() {
-  return (
-    <div className="dashboard-container">
-      <h1>Welcome to Dashboard</h1>
-    </div>
-  );
-}
-
 function App() {
-  if (!CLERK_PUBLISHABLE_KEY) {
-    console.error("Missing Clerk Publishable Key");
-    return <div>Missing Clerk Publishable Key</div>;
-  }
+  React.useEffect(() => {
+    // Add dark mode class to html element
+    document.documentElement.classList.add('dark');
+  }, []);
 
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+    <ClerkProvider publishableKey={clerkPubKey}>
       <BrowserRouter>
-        <div className="app-container">
-          <Routes>
-            <Route 
-              path="/sign-in" 
-              element={
+        <Routes>
+          <Route 
+            path="/sign-in" 
+            element={
+              <SignedOut>
+                <SignIn routing="path" signUpUrl="/sign-up" />
+              </SignedOut>
+            } 
+          />
+          
+          {/* Protected Routes */}
+          <Route
+            path="/*"
+            element={
+              <>
+                <SignedIn>
+                  <div className="flex min-h-screen">
+                    <Sidebar />
+                    <main className="flex-1 p-6">
+                      <Routes>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/projects" element={<Projects />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        <Route path="/repositories" element={<Repositories />} />
+                      </Routes>
+                    </main>
+                  </div>
+                </SignedIn>
                 <SignedOut>
-                  <SignIn routing="path" signUpUrl="/sign-up" />
+                  <RedirectToSignIn />
                 </SignedOut>
-              } 
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/projects"
-              element={
-                <ProtectedRoute>
-                  <Projects />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/"
-              element={<Navigate to="/dashboard" replace />}
-            />
-          </Routes>
-        </div>
+              </>
+            }
+          />
+        </Routes>
       </BrowserRouter>
     </ClerkProvider>
   );

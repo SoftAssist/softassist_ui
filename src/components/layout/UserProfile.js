@@ -1,9 +1,11 @@
 import { useUser } from "@clerk/clerk-react";
 import React, { useEffect } from 'react';
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import { Skeleton } from "../ui/skeleton";
 
 import { softAssistAPI } from '../../api/softAssistAPI';
 import useApi from '../../hooks/useApi';
-import './UserProfile.css';
+
 
 const UserProfile = () => {
   const { user: clerkUser } = useUser();
@@ -38,44 +40,42 @@ const UserProfile = () => {
 
   if (loading) {
     return (
-      <div className="user-profile" data-testid="user-profile-loading">
-        <div className="user-info loading">
-          <div className="user-avatar-skeleton"></div>
-          <div className="user-details-skeleton">
-            <div className="name-skeleton"></div>
-            <div className="email-skeleton"></div>
+      <div className="p-4 border-b" data-testid="user-profile-loading">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[120px]" />
+            <Skeleton className="h-3 w-[150px]" />
           </div>
         </div>
       </div>
     );
   }
 
-  // Always show at least the Clerk user data
   return (
-    <div className="user-profile">
-      <div className="user-info">
-        {clerkUser?.imageUrl && (
-          <img 
-            src={clerkUser.imageUrl} 
-            alt="Profile" 
-            className="user-avatar"
-          />
-        )}
-        <div className="user-details">
-          <div className="user-name">
+    <div className="p-4 border-b">
+      <div className="flex items-center gap-3">
+        <Avatar>
+          <AvatarImage src={clerkUser?.imageUrl} alt="Profile" />
+          <AvatarFallback>
+            {(apiUser?.name || clerkUser?.fullName || 'User').charAt(0)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="overflow-hidden">
+          <div className="font-medium truncate">
             {apiUser?.name || clerkUser?.fullName || 'User'}
           </div>
-          <div className="user-email">
+          <div className="text-sm text-muted-foreground truncate">
             {apiUser?.email || clerkUser?.primaryEmailAddress?.emailAddress}
           </div>
           {apiUser?.role && (
-            <div className="user-role">{apiUser.role}</div>
+            <div className="text-xs text-primary mt-1">{apiUser.role}</div>
           )}
           {apiUser?.message && (
-            <div className="user-message">{apiUser.message}</div>
+            <div className="text-sm mt-1">{apiUser.message}</div>
           )}
           {error && (
-            <div className="api-error-indicator" title={error.message}>
+            <div className="text-destructive text-sm mt-1" title={error.message}>
               ⚠️ API Error
             </div>
           )}

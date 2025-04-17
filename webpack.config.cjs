@@ -21,9 +21,8 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].[contenthash].js',
-    clean: true,
-    publicPath: '/'
+    filename: 'bundle.js',
+    publicPath: '/',
   },
   module: {
     rules: [
@@ -31,47 +30,54 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              ['@babel/preset-react', {
-                runtime: 'automatic'
-              }],
-              '@babel/preset-env'
-            ],
-            sourceType: 'unambiguous'
-          }
-        }
-      },
-      {
-        test: /\.js$/,
-        resolve: {
-          fullySpecified: false
+          loader: 'babel-loader'
         }
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      }
-    ]
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  'tailwindcss',
+                  'autoprefixer',
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ],
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
-    mainFiles: ['index'],
-    fullySpecified: false
+    extensions: ['*', '.js', '.jsx'],
+    fallback: {
+      "process/browser": require.resolve("process/browser")
+    }
   },
   devServer: {
-    port: 3000,
-    hot: true,
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
     historyApiFallback: true,
-    open: true
+    port: 3000,
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html',  // Path to your template
-      filename: 'index.html'
+      template: './public/index.html',
     }),
-    new webpack.DefinePlugin(envKeys)
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify({
+        NODE_ENV: process.env.NODE_ENV || 'development',
+        REACT_APP_CLERK_PUBLISHABLE_KEY: env.REACT_APP_CLERK_PUBLISHABLE_KEY
+      })
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser'
+    })
   ],
-  // ... rest of your existing config ...
 }; 

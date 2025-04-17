@@ -26,4 +26,17 @@ process.on('SIGINT', () => {
     console.log('\nPort cleanup completed. Exiting...');
     process.exit(0);
   });
+});
+
+// Delete the dist directory
+exec('rm -rf dist/*', (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error: ${error}`);
+    return;
+  }
+  if (stderr) {
+    console.error(`stderr: ${stderr}`);
+    return;
+  }
+  console.log('Cleanup completed successfully');
 }); 
