@@ -10,6 +10,7 @@ import {
     SheetTitle,
   } from "../ui/sheets.jsx";
 import { Textarea } from "../ui/textarea.jsx";
+import IssueSuggestionDialog from "./issueSuggestionModal.jsx";
 
 const Meetings = () => {
     const [meetings, setMeetings] = useState([
@@ -42,6 +43,10 @@ const Meetings = () => {
   const [notes, setNotes] = useState("");
   const [summarySheetOpen, setSummarySheetOpen] = useState(false);
   const [selectedSummary, setSelectedSummary] = useState(null);
+  const [issueModalOpen, setIssueModalOpen] = useState(false);
+  const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const [suggestedIssues, setSuggestedIssues] = useState([]);
+
 
   const handleAddMeeting = () => {
     const newMeeting = {
@@ -147,14 +152,30 @@ const Meetings = () => {
     </Button>
   )}
 
-  <Button
-    size="sm"
-    variant="outline"
-    disabled={!meeting.transcribed}
-    onClick={() => console.log("Generating issue for:", meeting.title)}
-  >
-    Generate Issue
-  </Button>
+<Button
+  size="sm"
+  variant="outline"
+  disabled={!meeting.transcribed}
+  onClick={() => {
+    // Fake LLM response
+    const suggestions = [
+      {
+        key: "LLM-1",
+        summary: `Clarify discussion point from "${meeting.title}"`,
+      },
+      {
+        key: "LLM-2",
+        summary: `Follow up on action items mentioned in "${meeting.title}"`,
+      },
+    ];
+    setSelectedMeeting(meeting);
+    setSuggestedIssues(suggestions);
+    setIssueModalOpen(true);
+  }}
+>
+  Generate Issue
+</Button>
+
 
   <Button size="sm" variant="destructive" onClick={() => handleDelete(meeting.id)}>
     Delete
@@ -178,6 +199,16 @@ const Meetings = () => {
     </div>
   </SheetContent>
 </Sheet>
+<IssueSuggestionDialog
+  open={issueModalOpen}
+  onOpenChange={setIssueModalOpen}
+  meeting={selectedMeeting}
+  suggestedIssues={suggestedIssues}
+  onAddToJira={() => {
+    console.log("Added to JIRA:", suggestedIssues);
+    setIssueModalOpen(false);
+  }}
+/>
 
     </div>
   );
