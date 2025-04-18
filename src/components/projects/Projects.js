@@ -1,42 +1,96 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '../ui/dialog.jsx';
+import { Input } from '../ui/input.jsx';
+import { Textarea } from '../ui/textarea.jsx';
+import { Button } from '../ui/button.jsx';
 import './Projects.css';
 
 const Projects = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [projectName, setProjectName] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
 
-  const projects = [
+  const [projects, setProjects] = useState([
     {
       id: 1,
       name: 'Project Alpha',
       description: 'AI-powered code assistant integration',
       status: 'active',
-      lastUpdated: '2024-03-20'
+      lastUpdated: '2024-03-20',
     },
-    // Add more sample projects as needed
-  ];
+    // You can start with more projects if needed
+  ]);
 
   const handleProjectClick = (projectId) => {
     navigate(`/projects/${projectId}`);
   };
 
-  const handleNewProject = () => {
-    navigate('/projects/new');
+  const handleCreateProject = () => {
+    const newProject = {
+      id: projects.length + 1,
+      name: projectName,
+      description: projectDescription,
+      status: 'active',
+      lastUpdated: new Date().toISOString().split('T')[0],
+    };
+
+    setProjects([...projects, newProject]);
+    setOpen(false);
+    setProjectName('');
+    setProjectDescription('');
   };
 
   return (
     <div className="projects-container">
       <div className="projects-header">
         <h1>Projects</h1>
-        <button className="button new-project-btn" onClick={handleNewProject}>
-          <span>+</span> New Project
-        </button>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button className="new-project-btn">
+              <span>+</span> New Project
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create New Project</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                placeholder="Project Name"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+              />
+              <Textarea
+                placeholder="Project Description"
+                value={projectDescription}
+                onChange={(e) => setProjectDescription(e.target.value)}
+              />
+            </div>
+            <DialogFooter className="mt-4">
+              <Button
+                onClick={handleCreateProject}
+                disabled={!projectName.trim()}
+              >
+                Create
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="projects-grid">
         {projects.map((project) => (
-          <div 
-            key={project.id} 
+          <div
+            key={project.id}
             className="project-card"
             onClick={() => handleProjectClick(project.id)}
           >
@@ -57,4 +111,4 @@ const Projects = () => {
   );
 };
 
-export default Projects; 
+export default Projects;

@@ -1,10 +1,10 @@
 import { useUser } from "@clerk/clerk-react";
 import React, { useEffect } from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { Skeleton } from "../ui/skeleton";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar.jsx";
+import { Skeleton } from "../ui/skeleton.jsx";
 
-import { softAssistAPI } from '../../api/softAssistAPI';
-import useApi from '../../hooks/useApi';
+import { softAssistAPI } from '../../api/softAssistAPI.js';
+import useApi from '../../hooks/useApi.js';
 
 
 const UserProfile = () => {

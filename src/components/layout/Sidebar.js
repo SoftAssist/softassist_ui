@@ -10,6 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion.jsx";
+import UserProfile from './UserProfile.js';
 
 
 function Sidebar() {

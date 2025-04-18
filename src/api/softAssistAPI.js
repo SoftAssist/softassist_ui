@@ -1,4 +1,4 @@
-import { apiRequest } from './axiosConfig';
+import { apiRequest } from './axiosConfig.js';
 
 export const softAssistAPI = {
   // User endpoints
