@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from './components/layout/Sidebar.js';
 import Dashboard from './components/Dashboard.jsx';
 import Projects from './components/projects/Projects.js';
+import SingleProject from './components/projects/singleProject.jsx';
 import Settings from './components/settings/Settings.js';
 import Repositories from "./components/repositories/repositories.js";
 import './App.css';
@@ -85,6 +86,7 @@ function App() {
                       <Routes>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/projects" element={<Projects />} />
+                        <Route path="/projects/:id" element={<SingleProject />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/" element={<Navigate to="/dashboard" replace />} />
                         <Route path="/repositories" element={<Repositories />} />
