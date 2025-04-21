@@ -99,6 +99,20 @@ export const softAssistAPI = {
         params: { q: query },
       }),
   },
+
+  meetings: {
+    getProjectMeetings: (projectId) =>
+      apiRequest({
+        url: `/frontend/meetings/${projectId}`,
+        method: 'GET',
+      }),
+
+    generateTranscript: (meetingId) =>
+      apiRequest({
+        url: `/frontend/meetings/${meetingId}/transcribe`,
+        method: 'GET',
+      }),
+  },
 };
 
 // Usage example:
