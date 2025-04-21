@@ -19,26 +19,10 @@ function Sidebar() {
   return (
     <div className="min-h-screen w-64 border-r border-border bg-background/95 p-4 flex flex-col">
       {/* Profile Section */}
-      <div className="flex items-center space-x-4 mb-8 p-2">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={user?.imageUrl} />
-          <AvatarFallback className="bg-muted">
-            {user?.firstName?.charAt(0)}
-            {user?.lastName?.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="space-y-1">
-          <p className="text-sm font-medium leading-none">{user?.fullName}</p>
-          <p className="text-xs text-muted-foreground">
-            {user?.primaryEmailAddress?.emailAddress}
-          </p>
-        </div>
-      </div>
+      <UserProfile />
 
       {/* Navigation */}
-      <nav className="space-y-2">
-      
-
+      <nav className="space-y-2 mt-4">
         <Button variant="ghost" className="w-full justify-start hover:bg-accent" asChild>
           <Link to="/dashboard">
             <svg

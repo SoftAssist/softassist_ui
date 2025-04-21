@@ -3,9 +3,16 @@ import { apiRequest } from './axiosConfig.js';
 export const softAssistAPI = {
   // User endpoints
   user: {
-    getCurrentUser: () => 
+    getCurrentUser: (userData) => 
       apiRequest({
-        url: '/frontend/user',
+        url: '/frontend/user/clerk-signin',
+        method: 'POST',
+        data: {
+          clerkId: userData.clerkId,
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+        },
       }),
     
     updateUser: (userData) =>

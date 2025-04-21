@@ -2,6 +2,7 @@ import { ClerkProvider, SignIn, SignedIn, SignedOut, RedirectToSignIn } from "@c
 import PropTypes from 'prop-types';
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { UserProvider, useCurrentUser } from './contexts/UserContext.js';
 
 import Sidebar from './components/layout/Sidebar.js';
 import Dashboard from './components/Dashboard.jsx';
@@ -64,46 +65,48 @@ function App() {
 
   return (
     <ClerkProvider publishableKey={clerkPubKey}>
-      <BrowserRouter>
-        <Routes>
-          <Route 
-            path="/sign-in" 
-            element={
-              <SignedOut>
-                <SignIn routing="path" signUpUrl="/sign-up" />
-              </SignedOut>
-            } 
-          />
-          
-          {/* Protected Routes */}
-          <Route
-            path="/*"
-            element={
-              <>
-                <SignedIn>
-                  <div className="flex min-h-screen">
-                    <Sidebar />
-                    <main className="flex-1 p-6">
-                      <Routes>
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/projects" element={<Projects />} />
-                        <Route path="/projects/:id" element={<SingleProject />} />
-                        <Route path="/settings" element={<Settings />} />
-                        <Route path="/meet" element={<JitsiMeet />} />
-                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                        <Route path="/repositories" element={<Repositories />} />
-                      </Routes>
-                    </main>
-                  </div>
-                </SignedIn>
+      <UserProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route 
+              path="/sign-in" 
+              element={
                 <SignedOut>
-                  <RedirectToSignIn />
+                  <SignIn routing="path" signUpUrl="/sign-up" />
                 </SignedOut>
-              </>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+              } 
+            />
+            
+            {/* Protected Routes */}
+            <Route
+              path="/*"
+              element={
+                <>
+                  <SignedIn>
+                    <div className="flex min-h-screen">
+                      <Sidebar />
+                      <main className="flex-1 p-6">
+                        <Routes>
+                          <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/projects" element={<Projects />} />
+                          <Route path="/projects/:id" element={<SingleProject />} />
+                          <Route path="/settings" element={<Settings />} />
+                          <Route path="/meet" element={<JitsiMeet />} />
+                          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                          <Route path="/repositories" element={<Repositories />} />
+                        </Routes>
+                      </main>
+                    </div>
+                  </SignedIn>
+                  <SignedOut>
+                    <RedirectToSignIn />
+                  </SignedOut>
+                </>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </UserProvider>
     </ClerkProvider>
   );
 }
