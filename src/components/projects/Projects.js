@@ -27,6 +27,7 @@ const Projects = () => {
   const [error, setError] = useState(null);
   const [showJoinDialog, setShowJoinDialog] = useState(false);
   const [allProjects, setAllProjects] = useState([]);
+  const [showSignOutPrompt, setShowSignOutPrompt] = useState(false);
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -45,7 +46,10 @@ const Projects = () => {
       
       if (Array.isArray(projectsData)) {
         setAllProjects(projectsData);
-        setProjects(projectsData);
+        // Only set projects that are in the user's projects array
+        const userProjectIds = currentUser?.projects?.map(p => p._id) || [];
+        const userProjects = projectsData.filter(p => userProjectIds.includes(p._id));
+        setProjects(userProjects);
       } else {
         console.error('Projects data is not an array:', projectsData);
         setAllProjects([]);
@@ -58,7 +62,7 @@ const Projects = () => {
       setError('Failed to load projects');
       setLoading(false);
     }
-  }, []);
+  }, [currentUser?.projects]);
 
   // Initial fetch on mount
   useEffect(() => {
@@ -86,6 +90,7 @@ const Projects = () => {
 
       await fetchProjects(); // Refresh the projects list
       setShowJoinDialog(false);
+      setShowSignOutPrompt(true); // Show the sign out prompt
     } catch (err) {
       console.error('Join project error:', err);
       setError(err.message || 'Failed to join project');
@@ -232,6 +237,22 @@ const Projects = () => {
           </div>
         ))}
       </div>
+
+      <Dialog open={showSignOutPrompt} onOpenChange={setShowSignOutPrompt}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Project Access Update Required</DialogTitle>
+            <DialogDescription>
+              To access your newly joined project, please sign out and sign back in to refresh your permissions.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4">
+            <Button onClick={() => setShowSignOutPrompt(false)}>
+              Understood
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
