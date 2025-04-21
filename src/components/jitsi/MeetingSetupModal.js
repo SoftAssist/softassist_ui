@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { softAssistAPI } from '../../api/softAssistAPI.js';
 
 const MeetingSetupModal = ({ isOpen, onClose, onStart }) => {
   const [meetingName, setMeetingName] = useState('');
@@ -11,8 +11,8 @@ const MeetingSetupModal = ({ isOpen, onClose, onStart }) => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('/api/projects');
-        setProjects(response.data);
+        const response = await softAssistAPI.projects.getAll();
+        setProjects(response);
         setLoading(false);
       } catch (err) {
         setError('Failed to load projects');
@@ -72,7 +72,7 @@ const MeetingSetupModal = ({ isOpen, onClose, onStart }) => {
                   <option value="">Select a project</option>
                   {projects.map((project) => (
                     <option key={project.id} value={project.id}>
-                      {project.name}
+                      {project.projectName}
                     </option>
                   ))}
                 </select>
