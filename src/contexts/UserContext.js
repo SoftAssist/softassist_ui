@@ -1,13 +1,20 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
 
-  const updateUser = (userData) => {
-    setCurrentUser(userData);
-  };
+  // Use useCallback to prevent recreation of this function on every render
+  const updateUser = useCallback((userData) => {
+    // Only update if the data is different
+    setCurrentUser(prev => {
+      if (JSON.stringify(prev) === JSON.stringify(userData)) {
+        return prev;
+      }
+      return userData;
+    });
+  }, []);
 
   return (
     <UserContext.Provider value={{ currentUser, updateUser }}>

@@ -21,6 +21,16 @@ export const softAssistAPI = {
         url: '/frontend/user',
         data: userData,
       }),
+    
+    associateWithProject: (projectId, userId) =>
+      apiRequest({
+        method: 'POST',
+        url: `/frontend/user/add-project`,
+        data: {
+          projectId: projectId,
+          userId: userId
+        },
+      }),
   },
 
   // Projects endpoints

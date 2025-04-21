@@ -29,6 +29,7 @@ const UserProfile = () => {
     execute: fetchUser 
   } = useApi(getUserData, {
     onSuccess: (response) => {
+      console.log(response.data);
       // Store the user data from the response
       updateUser(response.data);
     }

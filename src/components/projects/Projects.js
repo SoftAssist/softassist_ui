@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCurrentUser } from '../../contexts/UserContext.js';
 import { softAssistAPI } from '../../api/softAssistAPI.js';
@@ -28,13 +28,11 @@ const Projects = () => {
   const [showJoinDialog, setShowJoinDialog] = useState(false);
   const [allProjects, setAllProjects] = useState([]);
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       console.log('Fetching projects...');
       const response = await softAssistAPI.projects.getAll();
-      console.log('Raw API Response:', response);
       
-      // Parse the responseData if it's a string
       let projectsData;
       try {
         projectsData = typeof response.responseData === 'string' 
@@ -62,25 +60,39 @@ const Projects = () => {
       setError('Failed to load projects');
       setLoading(false);
     }
-  };
+  }, []); // Empty dependency array since it doesn't depend on any props or state
 
   // Initial fetch on mount
   useEffect(() => {
-    if (currentUser?._id) {
-      console.log('Initial project fetch');
+    if (currentUser?._id && loading) {
       fetchProjects();
-    } else {
-      setLoading(false);
     }
-  }, [currentUser]);
+  }, [currentUser, loading, fetchProjects]); // Only run when currentUser changes or on initial load
 
   // Fetch projects when join dialog opens
   useEffect(() => {
-    if (showJoinDialog) {
-      console.log('Join dialog opened, fetching projects');
+    if (showJoinDialog && currentUser?._id) {
       fetchProjects();
     }
-  }, [showJoinDialog]);
+  }, [showJoinDialog, currentUser?._id, fetchProjects]); // Only run when dialog opens
+
+  const handleJoinProject = async (projectId) => {
+    try {
+      if (!currentUser?._id) {
+        throw new Error('User ID not available');
+      }
+
+      await softAssistAPI.user.associateWithProject(projectId, 
+        currentUser._id.replace('user_', '')
+      );
+
+      await fetchProjects(); // Refresh the projects list
+      setShowJoinDialog(false);
+    } catch (err) {
+      console.error('Join project error:', err);
+      setError(err.message || 'Failed to join project');
+    }
+  };
 
   const handleJoinDialogOpen = () => {
     console.log('Opening join dialog');
@@ -114,24 +126,6 @@ const Projects = () => {
     } catch (err) {
       console.error('Failed to create project:', err);
       setError('Failed to create project');
-    }
-  };
-
-  const handleJoinProject = async (projectId) => {
-    try {
-      await softAssistAPI.projects.update(projectId, {
-        users: [currentUser._id]
-      });
-
-      // Refresh projects list
-      const response = await softAssistAPI.projects.getAll();
-      const projectsData = typeof response.responseData === 'string' 
-        ? JSON.parse(response.responseData) 
-        : response.responseData;
-      setProjects(projectsData);
-      setShowJoinDialog(false);
-    } catch (err) {
-      setError('Failed to join project');
     }
   };
 
@@ -181,7 +175,11 @@ const Projects = () => {
 
           <Dialog open={showJoinDialog} onOpenChange={setShowJoinDialog}>
             <DialogTrigger asChild>
-              <Button variant="outline" onClick={handleJoinDialogOpen}>
+              <Button 
+                variant="outline" 
+                onClick={handleJoinDialogOpen}
+                disabled={!currentUser?._id} // Disable if no user
+              >
                 Join Existing Project
               </Button>
             </DialogTrigger>
@@ -193,7 +191,9 @@ const Projects = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
-                {loading ? (
+                {!currentUser?._id ? (
+                  <div className="text-red-500">Please log in to join projects</div>
+                ) : loading ? (
                   <div>Loading projects...</div>
                 ) : error ? (
                   <div className="text-red-500">{error}</div>
@@ -204,11 +204,14 @@ const Projects = () => {
                     <div key={project._id} className="flex justify-between items-center p-2 border rounded">
                       <div>
                         <h3 className="font-medium">{project.projectName}</h3>
-                        <p className="text-sm text-gray-500">Created: {new Date(project.createdDate).toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-500">
+                          Created: {new Date(project.createdDate).toLocaleDateString()}
+                        </p>
                       </div>
                       <Button
                         onClick={() => handleJoinProject(project._id)}
                         size="sm"
+                        disabled={!currentUser?._id}
                       >
                         Join
                       </Button>
