@@ -43,8 +43,6 @@ const Projects = () => {
         projectsData = [];
       }
       
-      console.log('Parsed projects data:', projectsData);
-      
       if (Array.isArray(projectsData)) {
         setAllProjects(projectsData);
         setProjects(projectsData);
@@ -60,7 +58,7 @@ const Projects = () => {
       setError('Failed to load projects');
       setLoading(false);
     }
-  }, []); // Empty dependency array since it doesn't depend on any props or state
+  }, []);
 
   // Initial fetch on mount
   useEffect(() => {
@@ -111,13 +109,7 @@ const Projects = () => {
       });
 
       // After successful creation, fetch the updated project list
-      const response = await softAssistAPI.projects.getAll();
-      const projectsData = typeof response.responseData === 'string' 
-        ? JSON.parse(response.responseData) 
-        : response.responseData;
-      
-      setAllProjects(projectsData);
-      setProjects(projectsData);
+      await fetchProjects();
 
       // Close the dialog and reset form
       setOpen(false);
@@ -197,10 +189,10 @@ const Projects = () => {
                   <div>Loading projects...</div>
                 ) : error ? (
                   <div className="text-red-500">{error}</div>
-                ) : allProjects.length === 0 ? (
+                ) : (allProjects || []).length === 0 ? (
                   <div>No projects available to join</div>
                 ) : (
-                  allProjects.map(project => (
+                  (allProjects || []).map(project => (
                     <div key={project._id} className="flex justify-between items-center p-2 border rounded">
                       <div>
                         <h3 className="font-medium">{project.projectName}</h3>
@@ -225,7 +217,7 @@ const Projects = () => {
       </div>
 
       <div className="projects-grid">
-        {projects.map((project) => (
+        {(projects || []).map((project) => (
           <div
             key={project._id}
             className="project-card"
