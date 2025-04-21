@@ -27,7 +27,7 @@ export const softAssistAPI = {
   projects: {
     getAll: () =>
       apiRequest({
-        url: '/frontend/projects',
+        url: '/frontend/project',
       }),
 
     getById: (projectId) =>
@@ -38,21 +38,31 @@ export const softAssistAPI = {
     create: (projectData) =>
       apiRequest({
         method: 'POST',
-        url: '/frontend/projects',
-        data: projectData,
+        url: `/frontend/project/${projectData.name}/create`,
+        data: {
+          name: projectData.name,
+          description: projectData.description
+        },
       }),
 
     update: (projectId, projectData) =>
       apiRequest({
         method: 'PUT',
         url: `/frontend/projects/${projectId}`,
-        data: projectData,
       }),
 
     delete: (projectId) =>
       apiRequest({
         method: 'DELETE',
         url: `/frontend/projects/${projectId}`,
+      }),
+
+    // New endpoint for managing project users
+    updateUsers: (projectId, users) =>
+      apiRequest({
+        method: 'PUT',
+        url: `/frontend/projects/${projectId}/users`,
+        data: { users },
       }),
   },
 
