@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://127.0.0.1:8087/api/v1';
+const BASE_URL = 'http://127.0.0.1:8080/api/v1';
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
@@ -81,6 +81,8 @@ const apiRequest = async ({
   data = null,
   params = null,
   headers = {},
+  timeout = axiosInstance.defaults.timeout,
+  timeoutErrorMessage,
 }) => {
   try {
     const response = await axiosInstance({
@@ -92,6 +94,8 @@ const apiRequest = async ({
         ...axiosInstance.defaults.headers,
         ...headers,
       },
+      timeout,
+      timeoutErrorMessage,
     });
     return response;
   } catch (error) {

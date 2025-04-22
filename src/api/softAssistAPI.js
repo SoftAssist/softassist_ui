@@ -3,9 +3,16 @@ import { apiRequest } from './axiosConfig.js';
 export const softAssistAPI = {
   // User endpoints
   user: {
-    getCurrentUser: () => 
+    getCurrentUser: (userData) => 
       apiRequest({
-        url: '/frontend/user',
+        url: '/frontend/user/clerk-signin',
+        method: 'POST',
+        data: {
+          clerkId: userData.clerkId,
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+        },
       }),
     
     updateUser: (userData) =>
@@ -14,38 +21,58 @@ export const softAssistAPI = {
         url: '/frontend/user',
         data: userData,
       }),
+    
+    associateWithProject: (projectId, userId) =>
+      apiRequest({
+        method: 'POST',
+        url: `/frontend/user/add-project`,
+        data: {
+          projectId: projectId,
+          userId: userId
+        },
+      }),
   },
 
   // Projects endpoints
   projects: {
     getAll: () =>
       apiRequest({
-        url: '/frontend/projects',
+        url: '/frontend/project',
       }),
 
     getById: (projectId) =>
       apiRequest({
-        url: `/frontend/projects/${projectId}`,
+        url: `/frontend/project/${projectId}`,
       }),
 
     create: (projectData) =>
       apiRequest({
         method: 'POST',
-        url: '/frontend/projects',
-        data: projectData,
+        url: `/frontend/project/${projectData.name}/create`,
+        data: {
+          name: projectData.name,
+          description: projectData.description
+        },
       }),
 
     update: (projectId, projectData) =>
       apiRequest({
         method: 'PUT',
         url: `/frontend/projects/${projectId}`,
-        data: projectData,
       }),
 
     delete: (projectId) =>
       apiRequest({
         method: 'DELETE',
         url: `/frontend/projects/${projectId}`,
+      }),
+
+    // New endpoint for managing project users
+    updateUsers: (projectId, users) =>
+      apiRequest({
+        method: 'PUT',
+        url: `/frontend/projects/${projectId}/users`,
+        data: { users },
       }),
   },
 
@@ -71,6 +98,38 @@ export const softAssistAPI = {
         url: '/frontend/search/projects',
         params: { q: query },
       }),
+  },
+
+  meetings: {
+    getProjectMeetings: (projectId) =>
+      apiRequest({
+        url: `/frontend/meetings/${projectId}`,
+        method: 'GET',
+      }),
+
+    generateTranscript: (meetingId) =>
+      apiRequest({
+        url: `/frontend/meetings/${meetingId}/transcribe`,
+        method: 'GET',
+        timeout: 120000, // 120 seconds
+        timeoutErrorMessage: 'Transcript generation timed out after 120 seconds',
+      }),
+
+    createMeeting: (formData, onUploadProgress) => {
+      return apiRequest({
+        url: '/frontend/meetings',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        data: formData,
+        timeout: 120000,
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onUploadProgress(percentCompleted);
+        },
+      });
+    },
   },
 };
 

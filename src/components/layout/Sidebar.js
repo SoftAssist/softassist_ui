@@ -19,26 +19,10 @@ function Sidebar() {
   return (
     <div className="min-h-screen w-64 border-r border-border bg-background/95 p-4 flex flex-col">
       {/* Profile Section */}
-      <div className="flex items-center space-x-4 mb-8 p-2">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={user?.imageUrl} />
-          <AvatarFallback className="bg-muted">
-            {user?.firstName?.charAt(0)}
-            {user?.lastName?.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="space-y-1">
-          <p className="text-sm font-medium leading-none">{user?.fullName}</p>
-          <p className="text-xs text-muted-foreground">
-            {user?.primaryEmailAddress?.emailAddress}
-          </p>
-        </div>
-      </div>
+      <UserProfile />
 
       {/* Navigation */}
-      <nav className="space-y-2">
-      
-
+      <nav className="space-y-2 mt-4">
         <Button variant="ghost" className="w-full justify-start hover:bg-accent" asChild>
           <Link to="/dashboard">
             <svg
@@ -100,8 +84,25 @@ function Sidebar() {
           </Link>
         </Button>
 
-        
-        
+        <Button variant="ghost" className="w-full justify-start hover:bg-accent" asChild>
+          <Link to="/meet">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-2 h-4 w-4"
+            >
+              <path d="M15 10l5 5-5 5" />
+              <path d="M4 4v7a4 4 0 0 0 4 4h11" />
+            </svg>
+            Video Meet
+          </Link>
+        </Button>
+
         <Button variant="ghost" className="w-full justify-start hover:bg-accent" asChild>
           <Link to="/settings">
             <svg
