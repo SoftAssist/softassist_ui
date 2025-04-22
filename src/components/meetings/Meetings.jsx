@@ -150,6 +150,67 @@ const Meetings = () => {
     }
   };
 
+  const handleGetSuggestedIssues = async (meetingId) => {
+    try {
+      // First try to get existing suggestions
+      const existingSuggestions = await softAssistAPI.llm.getSuggestedIssues(meetingId);
+      
+      if (existingSuggestions?.tasks && existingSuggestions.tasks.length > 0) {
+        // Transform the existing suggestions to match expected format
+        const formattedSuggestions = existingSuggestions.tasks.map(task => ({
+          key: task._id,
+          summary: task.summary,
+          description: task.description,
+          status: task.status
+        }));
+        setSuggestedIssues(formattedSuggestions);
+      } else {
+        // If no existing suggestions, generate new ones
+        await softAssistAPI.llm.generateSuggestedIssues(meetingId);
+        // Fetch the newly generated suggestions
+        const newSuggestions = await softAssistAPI.llm.getSuggestedIssues(meetingId);
+        const formattedSuggestions = newSuggestions.tasks.map(task => ({
+          key: task._id,
+          summary: task.summary,
+          description: task.description,
+          status: task.status
+        }));
+        setSuggestedIssues(formattedSuggestions);
+      }
+      
+      setSelectedMeeting(meetings.find(m => m._id === meetingId));
+      setIssueModalOpen(true);
+    } catch (err) {
+      console.error('Error getting suggested issues:', err);
+      setError('Failed to get suggested issues');
+    }
+  };
+
+  const handleAddToJira = async (issue) => {
+    try {
+      await softAssistAPI.jira.createIssue({
+        taskId: issue.key,
+        projectId: selectedMeeting.projectId,
+        summary: issue.summary,
+        description: issue.description,
+        issueType: 'Task'
+      });
+      
+      // Refresh the suggestions list to get updated statuses
+      const updatedSuggestions = await softAssistAPI.llm.getSuggestedIssues(selectedMeeting._id);
+      const formattedSuggestions = updatedSuggestions.tasks.map(task => ({
+        key: task._id,
+        summary: task.summary,
+        description: task.description,
+        status: task.status
+      }));
+      setSuggestedIssues(formattedSuggestions);
+    } catch (err) {
+      console.error('Error creating JIRA issue:', err);
+      setError('Failed to create JIRA issue');
+    }
+  };
+
   if (loading) {
     return <div>Loading meetings...</div>;
   }
@@ -276,6 +337,22 @@ const Meetings = () => {
                   )}
                 </div>
               </CardContent>
+              <CardContent>
+                <div className="mt-4 flex gap-2">
+                  {meeting.transcript && (  // Only show button if transcript exists
+                    <Button 
+                      onClick={() => handleGetSuggestedIssues(meeting._id)}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {meeting.suggestedIssues?.length > 0 
+                        ? 'Show Suggested Issues' 
+                        : 'Generate Suggested Issues'
+                      }
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
             </Card>
           ))
         )}
@@ -316,10 +393,7 @@ const Meetings = () => {
         onOpenChange={setIssueModalOpen}
         meeting={selectedMeeting}
         suggestedIssues={suggestedIssues}
-        onAddToJira={() => {
-          console.log("Added to JIRA:", suggestedIssues);
-          setIssueModalOpen(false);
-        }}
+        onAddToJira={handleAddToJira}
       />
     </div>
   );

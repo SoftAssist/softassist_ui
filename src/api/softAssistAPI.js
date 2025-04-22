@@ -74,6 +74,28 @@ export const softAssistAPI = {
         url: `/frontend/projects/${projectId}/users`,
         data: { users },
       }),
+
+      associateProject: (projectId, jiraProjectKey) =>
+        apiRequest({
+          url: `/frontend/project/${projectId}/associated-jira-project/${jiraProjectKey}`,
+          method: 'PUT',
+          data: { jiraProjectKey },
+        }),
+  },
+
+  llm: {
+    generateSuggestedIssues: (meetingId) =>
+      apiRequest({
+        url: `/frontend/llm/generateTasks`,
+        method: 'POST',
+        data: { meetingId },
+      }),
+
+    getSuggestedIssues: (meetingId) =>
+      apiRequest({
+        url: `/frontend/llm/existingTasksForMeeting/${meetingId}`,
+        method: 'GET',
+      }),
   },
 
   // Settings endpoints
@@ -136,6 +158,33 @@ export const softAssistAPI = {
         url: `/frontend/meetings/${meetingId}/summary`,
         method: 'GET',
         timeout: 120000,
+      }),
+  },
+
+  jira: {
+    getIssues: (jiraId) =>
+      apiRequest({
+        url: `/frontend/jira/project/${jiraId}/issues`,
+        method: 'GET',
+      }),
+    createIssue: ({taskId, projectId, summary, description, issueType}) => 
+      apiRequest({
+        url: `/frontend/jira/issue/createIssueFromSuggestedTask/${taskId}`,
+        method: 'POST',
+        data: {
+          projectId,
+          summary,
+          description,
+          issueType,
+          taskId,
+        },
+      }),
+    
+
+    getAvailableProjects: () =>
+      apiRequest({
+        url: '/frontend/jira/project',
+        method: 'GET',
       }),
   },
 };
