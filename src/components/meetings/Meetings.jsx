@@ -24,6 +24,9 @@ const Meetings = () => {
   const [generatingTranscript, setGeneratingTranscript] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const [selectedMeetingSummary, setSelectedMeetingSummary] = useState(null);
+  const [loadingSummary, setLoadingSummary] = useState(false);
 
   console.log('Current URL:', window.location.pathname); // Debug current URL
   console.log('Project ID from params:', projectId); // Debug projectId
@@ -133,6 +136,20 @@ const Meetings = () => {
     }
   };
 
+  const handleGenerateSummary = async (meetingId) => {
+    try {
+      setLoadingSummary(true);
+      const response = await softAssistAPI.meetings.generateSummary(meetingId);
+      setSelectedMeetingSummary(response.summary);  // Update to access .summary property
+      setSummaryOpen(true);
+    } catch (err) {
+      console.error('Error generating summary:', err);
+      setError('Failed to generate summary');
+    } finally {
+      setLoadingSummary(false);
+    }
+  };
+
   if (loading) {
     return <div>Loading meetings...</div>;
   }
@@ -217,9 +234,28 @@ const Meetings = () => {
               <CardContent>
                 <div className="max-h-40 overflow-y-auto">
                   {meeting.transcript ? (
-                    <p className="text-sm text-muted-foreground">
-                      {meeting.transcript}
-                    </p>
+                    <>
+                      <p className="text-sm text-muted-foreground">
+                        {meeting.transcript}
+                      </p>
+                      <div className="mt-4 flex gap-2">
+                        <Button 
+                          onClick={() => handleGenerateSummary(meeting._id)}
+                          disabled={loadingSummary}
+                          variant="outline"
+                          size="sm"
+                        >
+                          {loadingSummary ? (
+                            <>
+                              <span className="animate-spin mr-2">⚪</span>
+                              Generating Summary...
+                            </>
+                          ) : (
+                            'Generate Summary'
+                          )}
+                        </Button>
+                      </div>
+                    </>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-4">
                       <p className="text-sm text-muted-foreground mb-2">No transcript available</p>
@@ -257,6 +293,24 @@ const Meetings = () => {
           </div>
         </SheetContent>
       </Sheet>
+      <Dialog open={summaryOpen} onOpenChange={setSummaryOpen}>
+        <DialogContent className="sm:max-w-[800px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Meeting Summary</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {selectedMeetingSummary ? (
+              <div className="prose prose-sm">
+                <pre className="whitespace-pre-wrap text-sm">
+                  {selectedMeetingSummary}
+                </pre>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">No summary available</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
       <IssueSuggestionDialog
         open={issueModalOpen}
         onOpenChange={setIssueModalOpen}
