@@ -81,6 +81,8 @@ const apiRequest = async ({
   data = null,
   params = null,
   headers = {},
+  timeout = axiosInstance.defaults.timeout,
+  timeoutErrorMessage,
 }) => {
   try {
     const response = await axiosInstance({
@@ -92,6 +94,8 @@ const apiRequest = async ({
         ...axiosInstance.defaults.headers,
         ...headers,
       },
+      timeout,
+      timeoutErrorMessage,
     });
     return response;
   } catch (error) {

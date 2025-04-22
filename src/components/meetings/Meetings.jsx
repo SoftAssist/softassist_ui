@@ -22,9 +22,24 @@ const Meetings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [generatingTranscript, setGeneratingTranscript] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   console.log('Current URL:', window.location.pathname); // Debug current URL
   console.log('Project ID from params:', projectId); // Debug projectId
+
+  // Helper function to format date safely
+  const formatDate = (dateString) => {
+    try {
+      if (!dateString) return 'No date available';
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Invalid date';
+      return `${format(date, 'PPP')} at ${format(date, 'p')}`;
+    } catch (err) {
+      console.error('Error formatting date:', err);
+      return 'Invalid date';
+    }
+  };
 
   useEffect(() => {
     const fetchMeetings = async () => {
@@ -61,17 +76,41 @@ const Meetings = () => {
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [suggestedIssues, setSuggestedIssues] = useState([]);
 
-  const handleAddMeeting = () => {
-    const newMeeting = {
-      id: Date.now(),
-      title,
-      notes,
-      createdAt: new Date().toLocaleString(),
-    };
-    setMeetings([newMeeting, ...meetings]);
-    setOpen(false);
-    setTitle("");
-    setNotes("");
+  const handleAddMeeting = async () => {
+    try {
+      if (!selectedFile) {
+        setError('Please select an audio file');
+        return;
+      }
+
+      setUploadProgress(0);
+
+      // Create FormData object
+      const formData = new FormData();
+      formData.append('audioFile', selectedFile);
+      formData.append('projectId', projectId);
+      formData.append('meetingName', title);
+      formData.append('date', new Date().toISOString().split('T')[0]);
+
+      await softAssistAPI.meetings.createMeeting(formData, (progress) => {
+        setUploadProgress(progress);
+      });
+      
+      // Fetch updated meetings list
+      const updatedMeetings = await softAssistAPI.meetings.getProjectMeetings(projectId);
+      setMeetings(updatedMeetings || []);
+      
+      // Reset form
+      setOpen(false);
+      setTitle("");
+      setSelectedFile(null);
+      setUploadProgress(0);
+      
+    } catch (err) {
+      console.error('Error creating meeting:', err);
+      setError('Failed to create meeting. Please try again.');
+      setUploadProgress(0);
+    }
   };
 
   const handleDelete = (id) => {
@@ -81,14 +120,11 @@ const Meetings = () => {
   const handleGenerateTranscript = async (meetingId) => {
     try {
       setGeneratingTranscript(prev => ({ ...prev, [meetingId]: true }));
-      const response = await softAssistAPI.meetings.generateTranscript(meetingId);
+      await softAssistAPI.meetings.generateTranscript(meetingId);
       
-      // Update the meetings list with the new transcript
-      setMeetings(meetings.map(meeting => 
-        meeting._id === meetingId 
-          ? { ...meeting, transcript: response.transcript }
-          : meeting
-      ));
+      // Fetch updated meetings list to get the new transcript
+      const updatedMeetings = await softAssistAPI.meetings.getProjectMeetings(projectId);
+      setMeetings(updatedMeetings || []);
     } catch (err) {
       console.error('Error generating transcript:', err);
       setError('Failed to generate transcript');
@@ -110,40 +146,53 @@ const Meetings = () => {
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-medium">Meetings</h3>
         <Dialog open={open} onOpenChange={setOpen}>
-  <DialogTrigger asChild>
-    <Button>Add Meeting</Button>
-  </DialogTrigger>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>New Meeting</DialogTitle>
-    </DialogHeader>
-    <div className="space-y-4">
-      <Input
-        placeholder="Meeting Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <div>
-        <label className="block text-sm font-medium mb-1">Upload Audio/Video</label>
-        <Input
-          type="file"
-          accept="audio/*,video/*"
-          onChange={(e) => {
-            const file = e.target.files[0];
-            console.log("Selected file:", file);
-            // You can store this in state if needed
-          }}
-        />
-      </div>
-    </div>
-    <DialogFooter className="mt-4">
-      <Button onClick={handleAddMeeting} disabled={!title.trim()}>
-        Save
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
-
+          <DialogTrigger asChild>
+            <Button>Add Meeting</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>New Meeting</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                placeholder="Meeting Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+              <div>
+                <label className="block text-sm font-medium mb-1">Upload Audio/Video</label>
+                <Input
+                  type="file"
+                  accept="audio/*,video/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    setSelectedFile(file);
+                    console.log("Selected file:", file);
+                  }}
+                />
+              </div>
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="w-full">
+                  <div className="bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                    <div 
+                      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-sm text-center mt-1">{uploadProgress}% uploaded</p>
+                </div>
+              )}
+            </div>
+            <DialogFooter className="mt-4">
+              <Button 
+                onClick={handleAddMeeting} 
+                disabled={!title.trim() || !selectedFile || (uploadProgress > 0 && uploadProgress < 100)}
+              >
+                {uploadProgress > 0 && uploadProgress < 100 ? 'Uploading...' : 'Save'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <ul className="space-y-3">
@@ -157,7 +206,7 @@ const Meetings = () => {
                   <div>
                     <h3 className="text-lg font-semibold">{meeting.meetingName}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {format(new Date(meeting.date), 'PPP')} at {format(new Date(meeting.date), 'p')}
+                      {formatDate(meeting.date)}
                     </p>
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -196,29 +245,28 @@ const Meetings = () => {
         )}
       </ul>
       <Sheet open={summarySheetOpen} onOpenChange={setSummarySheetOpen}>
-  <SheetContent side="right" className="w-[40vw] sm:w-[60vw]">
-    <SheetHeader>
-      <SheetTitle>Meeting Summary</SheetTitle>
-    </SheetHeader>
-    <div className="mt-4 space-y-2">
-      <h3 className="text-lg font-semibold">{selectedSummary?.title}</h3>
-      <p className="text-sm text-muted-foreground">
-        {selectedSummary?.summary}
-      </p>
-    </div>
-  </SheetContent>
-</Sheet>
-<IssueSuggestionDialog
-  open={issueModalOpen}
-  onOpenChange={setIssueModalOpen}
-  meeting={selectedMeeting}
-  suggestedIssues={suggestedIssues}
-  onAddToJira={() => {
-    console.log("Added to JIRA:", suggestedIssues);
-    setIssueModalOpen(false);
-  }}
-/>
-
+        <SheetContent side="right" className="w-[40vw] sm:w-[60vw]">
+          <SheetHeader>
+            <SheetTitle>Meeting Summary</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 space-y-2">
+            <h3 className="text-lg font-semibold">{selectedSummary?.title}</h3>
+            <p className="text-sm text-muted-foreground">
+              {selectedSummary?.summary}
+            </p>
+          </div>
+        </SheetContent>
+      </Sheet>
+      <IssueSuggestionDialog
+        open={issueModalOpen}
+        onOpenChange={setIssueModalOpen}
+        meeting={selectedMeeting}
+        suggestedIssues={suggestedIssues}
+        onAddToJira={() => {
+          console.log("Added to JIRA:", suggestedIssues);
+          setIssueModalOpen(false);
+        }}
+      />
     </div>
   );
 };

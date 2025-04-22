@@ -42,7 +42,7 @@ export const softAssistAPI = {
 
     getById: (projectId) =>
       apiRequest({
-        url: `/frontend/projects/${projectId}`,
+        url: `/frontend/project/${projectId}`,
       }),
 
     create: (projectData) =>
@@ -111,7 +111,25 @@ export const softAssistAPI = {
       apiRequest({
         url: `/frontend/meetings/${meetingId}/transcribe`,
         method: 'GET',
+        timeout: 120000, // 120 seconds
+        timeoutErrorMessage: 'Transcript generation timed out after 120 seconds',
       }),
+
+    createMeeting: (formData, onUploadProgress) => {
+      return apiRequest({
+        url: '/frontend/meetings',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        data: formData,
+        timeout: 120000,
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onUploadProgress(percentCompleted);
+        },
+      });
+    },
   },
 };
 
