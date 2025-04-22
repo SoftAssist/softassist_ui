@@ -130,6 +130,13 @@ export const softAssistAPI = {
         },
       });
     },
+
+    generateSummary: (meetingId) =>
+      apiRequest({
+        url: `/frontend/meetings/${meetingId}/summary`,
+        method: 'GET',
+        timeout: 120000,
+      }),
   },
 };
 
