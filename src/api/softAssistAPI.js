@@ -187,7 +187,75 @@ export const softAssistAPI = {
         method: 'GET',
       }),
   },
+  github:{
+    getTemplates: ({context , repoName}) =>
+      apiRequest({
+        url: '/frontend/github/generate-template',
+        method: 'POST',
+        data: {
+          context,
+          repoName,
+        },
+      }),
+      createRepo: (repoName, context) =>
+        apiRequest({
+          url: '/frontend/github/create-github-repo',
+          method: 'POST',
+          data: {
+            repoName,
+            markdownStructure: context,
+          },
+        }),
+    
+        getPulls: (orgName) =>
+          apiRequest({
+            url: `/frontend/github/${orgName}/all-pulls`,
+            method: 'GET',
+          }),
+        
+      getRepos: (orgName) =>
+        apiRequest({
+          url: `/frontend/github/${orgName}/repos`,
+          method: 'GET',
+        }),
+
+        getActions : (orgName) =>
+        apiRequest({
+          url: `/frontend/github/${orgName}/actions`,
+          method: 'GET',
+        }),
+
+        mergerPR: ({orgName, repoName, prNumber}) =>
+        apiRequest({
+          url: `/frontend/github/merge`,
+          method: 'POST',
+          data: {
+            orgName,
+            repoName,
+            prNumber,
+          },
+        }),
+
+        runWorkflow: ({orgName, repoName, workflowId}) =>
+        apiRequest({
+          url: `/frontend/github/run-action`,
+          method: 'POST',
+          data: {
+            orgName,
+            repoName,
+            workflowId,
+          },
+        }),
+
+
+  },
+
+  
+
+
 };
+
+
 
 // Usage example:
 // import { softAssistAPI } from './api/softAssistAPI';
