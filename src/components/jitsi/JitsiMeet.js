@@ -79,10 +79,10 @@ const JitsiMeet = () => {
       apiRef.current = new window.JitsiMeetExternalAPI("8x8.vc", {
         roomName: roomName,
         parentNode: jitsiContainer.current,
-        jwt: "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtYTVlNGM1YzIyZTQwNDc2YjhiMjA4ODEwNTBmMjQxMmYvZmU1NGEzLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3NDUyODU0NTUsImV4cCI6MTc0NTI5MjY1NSwibmJmIjoxNzQ1Mjg1NDUwLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtYTVlNGM1YzIyZTQwNDc2YjhiMjA4ODEwNTBmMjQxMmYiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlfSwidXNlciI6eyJoaWRkZW4tZnJvbS1yZWNvcmRlciI6ZmFsc2UsIm1vZGVyYXRvciI6dHJ1ZSwibmFtZSI6ImptZWZmZXJ0IiwiaWQiOiJnb29nbGUtb2F1dGgyfDEwMTk5MTgzNzE3MjU0OTg4NTM1NCIsImF2YXRhciI6IiIsImVtYWlsIjoiam1lZmZlcnRAY2hhcmxvdHRlLmVkdSJ9fSwicm9vbSI6IioifQ.MHg0trWj9j4ObbaJb9XYcJswnZY6FkCs4wd3d_tCRvcwGQWJYBPlUIFPm4h5KbW52w-Ii5NIB1DSX7FCsSVh0H950M_YaJyLNmrFpztsseNuewepIr1ruT3W7Pm1FmGXAL6h7Va9TpL1vGbV_RBt3huew10Ecar_LVdsZNwYEkl6Lmau1lwSOTZBkYI8c_ICc-tOw_EE47UgBP77v8ZFgod6OB7YrGr0IgiaCjJofMHNJ4I3nXgXBPNc4TXP7WgRTJMHrt0lPH2MSJszJMTLjLLwHfBPlrXn9k8xy4YOLNhz4dGQjL0Hd6KawghSp4hXdufrgEBw6EfsZ2-RfAsYWw", // Add your JWT token here
+        jwt: "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtYTVlNGM1YzIyZTQwNDc2YjhiMjA4ODEwNTBmMjQxMmYvZmU1NGEzLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3NDU5NzE1MTksImV4cCI6MTc0NTk3ODcxOSwibmJmIjoxNzQ1OTcxNTE0LCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtYTVlNGM1YzIyZTQwNDc2YjhiMjA4ODEwNTBmMjQxMmYiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOnRydWUsIm91dGJvdW5kLWNhbGwiOnRydWUsInNpcC1vdXRib3VuZC1jYWxsIjpmYWxzZSwidHJhbnNjcmlwdGlvbiI6dHJ1ZSwicmVjb3JkaW5nIjp0cnVlfSwidXNlciI6eyJoaWRkZW4tZnJvbS1yZWNvcmRlciI6ZmFsc2UsIm1vZGVyYXRvciI6dHJ1ZSwibmFtZSI6ImptZWZmZXJ0IiwiaWQiOiJnb29nbGUtb2F1dGgyfDEwMTk5MTgzNzE3MjU0OTg4NTM1NCIsImF2YXRhciI6IiIsImVtYWlsIjoiam1lZmZlcnRAY2hhcmxvdHRlLmVkdSJ9fSwicm9vbSI6IioifQ.du6JAFmmZQal1uYBevpfYkLO8PNR6YzMrcyaD6ZfF52WfyKFk9psr06QowB1ivIMaHV-O1Syo8Y_iVqI6j2RVhAWI9_eVPiNTQ9d29nS3_AeaCJJUCsCOssE41ydMBOSzeUqHQNLvWCr8i9DTkHlMMaizTyJWzuycARuaqazx0T0UsoLC0MURXb9AntKbzVRans7yFV1HaYEMr7dAl3VgM14OwqrcDsL0wZi9dYx6ZpTgaL1q77huzslhdJMV274pD5XpByGujb2RiX4GelzQ3Ou862sPbV8lo_xRvs0IzcUZrdVfqNE6O9Zvs60pdyNgeOI-PrqQohsBnvFyWGCIg", // Add your JWT token here
         userInfo: {
-          displayName: user?.fullName || 'Guest',
-          email: user?.primaryEmailAddress?.emailAddress || '',
+          displayName: "nsalunke" || 'Guest',
+          email: "nsalunke@charlotte.edu" || '',
         },
         configOverwrite: {
           prejoinPageEnabled: false,
